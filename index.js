@@ -13,11 +13,14 @@ const botResponses = {
 }
 
 client.once("ready", () => {
-	console.log("Bot is ready...")
+	console.log(`Bot has logged in as ${client.user.tag}`)
+	client.user.setActivity("your webcam to LiveLeak", {
+		type: "STREAMING",
+		url: "https://www.twitch.tv/zer0flag"
+	})
 })
 
 client.login(process.env.BOT_TOKEN)
-
 // welcome new members
 client.on("guildMemberAdd", member => {
 	let general = client.channels.cache.get(process.env.GENERAL_CHANNEL_ID)
