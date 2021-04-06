@@ -6,6 +6,7 @@ const client = new Discord.Client()
 
 // import util functions
 const checkString = require("./utils/checkString")
+const cowsay = require("cowsay")
 
 // contains all pre-programmed responses the the bot can give
 const botResponses = {
@@ -37,6 +38,10 @@ client.on("message", msg => {
 	// Sends pic of RMS when he is mentioned
 	if(!checkString(msg.content, [["rms", ["richard", "stallman"], ["richard", "matthew", "stallman"]]], [])) {
 		msg.reply("Our Lord and Saviour!", {files: ["./img/RMS.jpg"]})
+	}
+
+	if(msg.content.startsWith("!cowsay")) {
+		msg.reply("```" + cowsay.say({text: msg.content.substr(msg.content.indexOf(" ") + 1), e: "oo"}) + "```")
 	}
 })
 
