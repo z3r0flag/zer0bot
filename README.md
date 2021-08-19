@@ -9,4 +9,13 @@ To use the bot on your own Discord server:
 ```
 BOT_TOKEN=your bot token
 GENERAL_CHANNEL_ID=the ID of the main channel in your server
+BOT_ID=the id of your zer0bot user
+ADMIN_ID=the id of the server owner
+```
+
+NPM commands:
+```
+npm install # set up node_modules dir
+npm run dev # start bot in dev mode (with nodemon)
+npm start # start bot in production mode (with just node)
 ```
