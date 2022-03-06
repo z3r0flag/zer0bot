@@ -3,6 +3,7 @@ const fetch = require("node-fetch")
 
 const Discord = require("discord.js")
 const client = new Discord.Client()
+const { exec } = require("child_process")
 
 // import util functions
 const checkString = require("./utils/checkString")
@@ -14,56 +15,88 @@ const botResponses = {
 	"vim": "You exit Vim by simply walking to the main power switch in your basement, turn it off, leave it off for about an hour, don’t open the freezer during this time, then turn power back on and your ArchOS should be up and running again without Vim. It’s so silly to think that I used to go through all the trouble of calling my electricity company and cancelling my power contract every time I wanted to exit Vim, before I figured out the proper way to do it." 
 }
 
+// message on join
 client.once("ready", () => {
 	console.log(`Bot has logged in as ${client.user.tag}`)
-	client.user.setActivity("your webcam to LiveLeak", {
-		type: "STREAMING",
-		url: "https://www.twitch.tv/zer0flag"
-	})
 })
 
 client.login(process.env.BOT_TOKEN)
 
 // welcome new members
 client.on("guildMemberAdd", member => {
-	let general = client.channels.cache.get(process.env.GENERAL_CHANNEL_ID)
-	general.send(`Welcome to hell ${member.user}`)
+	// member.guild.channels.cache.get(get_welcome_channel(member.guild.id)).send(`Welcome to hell, <@${member.user.id}>!`)
+	exec(`./zer0bot_tools get_welcome_channel ${member.guild.id}`, (err, stdout, stderr) => {
+		const welcome_channel = stdout.replace(/[\n\r]/g, '')
+		try {
+			setTimeout(() => member.guild.channels.cache.get(welcome_channel).send(`Welcome to hell ${member.user}`), 200)
+		} catch { }
+	})
 })
 
 // message listener
 client.on("message", msg => {
-	// Exit vim meme
-	if(!checkString(msg.content, ["how", ["vim", ["vi"]], ["exit", ["quit"]]], []) && msg.author.id != process.env.BOT_ID) {
-		msg.reply(botResponses.vim)
-	}
+	if(msg.content.length < 1900) {
+		let msg_formatted_lmao = msg.content.replace(/[^a-zA-Z ]/g, "")
+		if(msg_formatted_lmao.length > 1900 && msg.content[0] == "!") {
+			return 1
+		}
 
-	// GNU/Linux interjection functionality
-	if(!checkString(msg.content, ["linux", ["os", ["operating", "system"]]], ["not", "gnu"]) && msg.author.id != process.env.BOT_ID) {
-		msg.reply(botResponses.interjection)
-	}
+		// Exit vim meme
+		if(!checkString(msg_formatted_lmao, ["how", ["vim", ["vi"]], ["exit", ["quit"]]], []) && msg.author.id != process.env.BOT_ID) {
+			msg.reply(botResponses.vim)
+		}
 
-	// Sends pic of RMS when he is mentioned
-	if(!checkString(msg.content, [["rms", ["richard", "stallman"], ["richard", "matthew", "stallman"]]], []) && msg.author.id != process.env.BOT_ID) {
-		msg.channel.send("Our Lord and Saviour!", {files: ["./img/RMS.jpg"]})
-	}
+		// GNU/Linux interjection functionality
+		if(!checkString(msg_formatted_lmao, ["linux", ["os", ["operating", "system"]]], ["not", "gnu"]) && msg.author.id != process.env.BOT_ID) {
+			msg.reply(botResponses.interjection)
+		}
 
-	if(msg.content.startsWith("!cowsay") && msg.author.id != process.env.BOT_ID) {
-		const msg_formatted = msg.content.replace(new RegExp("`", "g"), "")
+		// Sends pic of RMS when he is mentioned
+		if(!checkString(msg_formatted_lmao, [["rms", ["richard", "stallman"], ["richard", "matthew", "stallman"]]], []) && msg.author.id != process.env.BOT_ID) {
+			msg.channel.send("Our Lord and Saviour!", {files: ["./img/RMS.jpg"]})
+		}
 
-		try {
-		msg.channel.send("```" + cowsay.say({text: msg_formatted.substr(msg_formatted.indexOf(" ") + 1), e: "oo"}) + "```")
-		} catch {
-			msg.channel.send("```" + cowsay.say({text: "nice try piece of shit", e: "oo"}) + "```")
+		// commands
+		if(msg.content.startsWith("!0") && msg.author.id != process.env.BOT_ID) {
+			const msg_formatted = msg.content.replace(new RegExp("`", "g"), "")
+			const command = msg_formatted.split(" ")[1]
+			const args = msg_formatted.replace(/^([^ ]+ ){2}/, '')
+			
+			switch(command) {
+				case "cowsay":
+					try {
+						msg.channel.send("```" + cowsay.say({text: args, e: "oo"}) + "```")
+					} catch {
+						msg.channel.send("```" + cowsay.say({text: "nice try", e: "oo"}) + "```")
+					}
+					break
+				case "ghostping":
+					msg.delete({timeout: 500})
+					break
+				case "zer0say":
+					msg.channel.send(args)
+					msg.delete()
+					break
+				case "set_welcome_channel":
+					if(msg.guild.ownerID == msg.author.id) {
+						try {
+							const channel_id = msg.guild.channels.cache.find(channel => channel.name === args).id
+							exec(`./zer0bot_tools set_welcome_channel ${msg.guild.id} ${channel_id}`, (err, stdout, stderr) => {
+								msg.channel.send(`Set the welcome channel for this guild to ${args} (id: ${channel_id})!`)
+							})
+						} catch {
+							msg.channel.send("Invalid channel name!")
+						}
+					} else { msg.channel.send("This command is limited to the owner of the guild!") }
+					break
+				default:
+					if(msg.guild.ownerID != msg.author.id) {
+						msg.channel.send('```This is an invalid command!\n\nVALID COMMANDS:\n================\n!0 cowsay\n!0 ghostping\n!0 zer0say```')
+					} else {
+						msg.channel.send('```This is an invalid command!\n\nVALID COMMANDS:\n================\n!0 cowsay\n!0 ghostping\n!0 zer0say\n\nADMIN COMMANDS:\n================\n!0 set_welcome_channel```')
+					}
+					break
+			}
 		}
 	}
-
-	if(msg.content.startsWith("!ghostping") && msg.author.id != process.env.BOT_ID) {
-		msg.delete({timeout: 500})
-	}
-
-	if(msg.content.startsWith("!zer0say") && msg.author.id != process.env.BOT_ID) {
-		msg.channel.send(msg.content.substr(msg.content.indexOf(" ") + 1))
-		msg.delete()
-	}
 })
-

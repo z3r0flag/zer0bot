@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ ! -e guild_data ] ; then
+    touch guild_data
+fi
+
+if [ "$1" == "set_welcome_channel" ]; then
+	if grep -q -wi "$2" guild_data; then
+		sed -i "s/^$2.*$/$2\t$3/g" guild_data	
+	else
+		printf "\n$2\t$3" >> guild_data
+	fi
+fi
+
+if [ "$1" == "get_welcome_channel" ]; then
+	if grep -q -wi "$2" guild_data; then
+		grep "$2	" guild_data | awk '{print $2}'	
+	fi
+fi
