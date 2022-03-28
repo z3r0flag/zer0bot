@@ -74,7 +74,7 @@ client.on("message", msg => {
 					msg.delete({timeout: 500})
 					break
 				case "zer0say":
-					msg.channel.send(args)
+					msg.channel.send({ content: args, allowedMentions: { parse: [] }})
 					msg.delete()
 					break
 				case "set_welcome_channel":
