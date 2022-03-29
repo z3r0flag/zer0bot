@@ -17,7 +17,8 @@ const botResponses = {
 
 // message on join
 client.once("ready", () => {
-	console.log(`Bot has logged in as ${client.user.tag}`)
+        console.log(`Bot has logged in as ${client.user.tag}`)
+        global.BOT_ID = client.user.id // Make sure the bot has authenticated first.
 })
 
 client.login(process.env.BOT_TOKEN)
