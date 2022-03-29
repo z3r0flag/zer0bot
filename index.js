@@ -17,7 +17,8 @@ const botResponses = {
 
 // message on join
 client.once("ready", () => {
-	console.log(`Bot has logged in as ${client.user.tag}`)
+        console.log(`Bot has logged in as ${client.user.tag}`)
+        global.BOT_ID = client.user.id // Make sure the bot has authenticated first.
 })
 
 client.login(process.env.BOT_TOKEN)
@@ -42,22 +43,22 @@ client.on("message", msg => {
 		}
 
 		// Exit vim meme
-		if(!checkString(msg_formatted_lmao, ["how", ["vim", ["vi"]], ["exit", ["quit"]]], []) && msg.author.id != process.env.BOT_ID) {
+		if(!checkString(msg_formatted_lmao, ["how", ["vim", ["vi"]], ["exit", ["quit"]]], []) && msg.author.id != BOT_ID) {
 			msg.reply(botResponses.vim)
 		}
 
 		// GNU/Linux interjection functionality
-		if(!checkString(msg_formatted_lmao, ["linux", ["os", ["operating", "system"]]], ["not", "gnu"]) && msg.author.id != process.env.BOT_ID) {
+		if(!checkString(msg_formatted_lmao, ["linux", ["os", ["operating", "system"]]], ["not", "gnu"]) && msg.author.id != BOT_ID) {
 			msg.reply(botResponses.interjection)
 		}
 
 		// Sends pic of RMS when he is mentioned
-		if(!checkString(msg_formatted_lmao, [["rms", ["richard", "stallman"], ["richard", "matthew", "stallman"]]], []) && msg.author.id != process.env.BOT_ID) {
+		if(!checkString(msg_formatted_lmao, [["rms", ["richard", "stallman"], ["richard", "matthew", "stallman"]]], []) && msg.author.id != BOT_ID) {
 			msg.channel.send("Our Lord and Saviour!", {files: ["./img/RMS.jpg"]})
 		}
 
 		// commands
-		if(msg.content.startsWith("!0") && msg.author.id != process.env.BOT_ID) {
+		if(msg.content.startsWith("!0") && msg.author.id != BOT_ID) {
 			const msg_formatted = msg.content.replace(new RegExp("`", "g"), "")
 			const command = msg_formatted.split(" ")[1]
 			const args = msg_formatted.replace(/^([^ ]+ ){2}/, '')
