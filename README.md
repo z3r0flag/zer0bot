@@ -20,11 +20,11 @@ The welcome functionality of the bot is disabled by default until you set the we
 
 ### To run a separate instance of this bot on your own:
 
-> Create a file called .env
-> Inside .env specify the following information:
+* Create a file called .env
+* Inside .env specify the following information:
 
 ```
 BOT_TOKEN=token_for_your_instance_of_this_bot
 ```
 
-> Start the bot with `npm start` for production mode, or `npm run dev` for development mode (development mode just runs it with nodemon).
+* Start the bot with `npm start` for production mode, or `npm run dev` for development mode (development mode just runs it with nodemon).
